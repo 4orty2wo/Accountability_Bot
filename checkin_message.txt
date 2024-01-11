@@ -1,0 +1,6 @@
+What would you like to work on today?
+
+List at least 3 things you will complete today and cross off your todo list.
+-Complete the next section of my online course
+-Revise my monthly budget
+-Do 4 leetcode problems
