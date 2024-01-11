@@ -27,7 +27,7 @@ logger.setLevel(logging.DEBUG)  # Set this to DEBUG to log all messages, or INFO
 intents = Intents.default()
 intents.messages = True
 intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
 # Initialize MongoDB client
 # mongo_client = MongoClient(MONGO_CONNECTION_STRING)
@@ -53,16 +53,22 @@ async def on_ready():
 	# PRINTS HOW MANY GUILDS / SERVERS THE BOT IS IN.
     print("Accountability Bot is in " + str(guild_count) + " guilds.")
 
+    # Get the welcome channel
+    welcome_channel = bot.get_channel(int(WELCOME_CHANNEL_ID))
+    await welcome_channel.send("I'm alive!") # Note: This message will be sent to the welcome channel every time the bot starts
 
-# Additional commands and error handling here
+
+async def load():
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            await bot.load_extension(f"cogs.{filename[:-3]}")
 
 
-
-@bot.event
-async def on_message(message):
-    # Your custom on_message logic
-    if message.author == bot.user:
-        return
+# Reload cogs without stopping the bot
+@bot.command()
+async def reload(ctx, cog: str):
+    bot.reload_extension(f'cogs.{cog}')
+    await ctx.send(f'{cog} reloaded')
 
 
 @bot.command(name='ping')
@@ -71,10 +77,10 @@ async def ping(ctx):
     await ctx.send("Pong!")
 
 
-async def run_bot():
-    await bot.start(BOT_TOKEN)
+async def main():
+    async with bot:
+        await load()
+        await bot.start(BOT_TOKEN)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(run_bot())
 
-
+asyncio.run(main())
