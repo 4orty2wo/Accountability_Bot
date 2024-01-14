@@ -1,23 +1,9 @@
-version: '3'
-
+version: '3.8'
 services:
   bot:
-    restart: unless-stopped
     build: .
     volumes:
-      - .:/usr/src/bot
-    depends_on:
-      - mongodb
-
-  mongodb:
-    image: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: rootuser
-      MONGO_INITDB_ROOT_PASSWORD: rootpass
-    ports:
-      - "27017:27017"
-
-volumes:
-  mongodb_data:
+      - .:/usr/src/app
+    restart: always
 
   
