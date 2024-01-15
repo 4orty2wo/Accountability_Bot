@@ -3,7 +3,6 @@ services:
   bot:
     build: .
     volumes:
-      - .:/usr/src/app
+      - ./cogs:/usr/src/bot/cogs
     restart: always
 
-  
