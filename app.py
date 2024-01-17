@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import yaml
 import datetime
 
+load_dotenv()
 
 # Use environment variables for sensitive data
 BOT_TOKEN = os.getenv('BOT_TOKEN')
