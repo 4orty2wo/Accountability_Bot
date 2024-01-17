@@ -13,7 +13,7 @@ class DailyCheckin(commands.Cog):
         self.daily_message.start()
 
     def load_channel_id(self):
-        with open('config.yml', 'r') as f:
+        with open('config.prod.yml', 'r') as f:
             config = yaml.safe_load(f)
             return int(config['SESSION_PLANNING_CHANNEL_ID'])
 
