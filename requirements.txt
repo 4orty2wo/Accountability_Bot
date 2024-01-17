@@ -1,3 +1,5 @@
 python-dotenv
 discord.py
 pymongo
+pytz
+yaml
