@@ -14,7 +14,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 MONGO_CONNECTION_STRING = os.getenv('MONGO_CONNECTION_STRING')
 
 # Load the config file
-with open('config.yml', 'r') as file:
+with open('config.prod.yml', 'r') as file:
     config = yaml.safe_load(file)
 
 WELCOME_CHANNEL_ID = config['WELCOME_CHANNEL_ID']
