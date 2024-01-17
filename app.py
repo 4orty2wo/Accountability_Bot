@@ -5,16 +5,19 @@ from discord.ext import commands
 from discord.ext.commands import CommandNotFound, CommandError
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import yaml
+import datetime
 
 
 # Use environment variables for sensitive data
-# Load environment variables from .env file
-load_dotenv()
-
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 MONGO_CONNECTION_STRING = os.getenv('MONGO_CONNECTION_STRING')
-WELCOME_CHANNEL_ID = os.getenv('WELCOME_CHANNEL_ID')
 
+# Load the config file
+with open('config.yml', 'r') as file:
+    config = yaml.safe_load(file)
+
+WELCOME_CHANNEL_ID = config['WELCOME_CHANNEL_ID']
 
 # Configure the logging level and format
 logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(name)s: %(message)s')
@@ -36,7 +39,7 @@ bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
 @bot.event
 async def on_ready():
-
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f'We have logged in as {bot.user}')
       
     # CREATES A COUNTER TO KEEP TRACK OF HOW MANY GUILDS / SERVERS THE BOT IS CONNECTED TO.
@@ -55,7 +58,7 @@ async def on_ready():
 
     # Get the welcome channel
     welcome_channel = bot.get_channel(int(WELCOME_CHANNEL_ID))
-    await welcome_channel.send("I'm alive!") # Note: This message will be sent to the welcome channel every time the bot starts
+    await welcome_channel.send(f"Bot started at {current_time}") # Note: This message will be sent to the welcome channel every time the bot starts
 
 
 async def load():
