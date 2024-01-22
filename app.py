@@ -66,7 +66,7 @@ async def on_ready():
 async def load():
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
-            await bot.load_extension(f"cogs.{filename[:-3]}")
+            bot.load_extension(f"cogs.{filename[:-3]}")
 
 
 # Reload cogs without stopping the bot
