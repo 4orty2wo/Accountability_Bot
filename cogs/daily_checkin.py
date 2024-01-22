@@ -27,7 +27,7 @@ class DailyCheckin(commands.Cog):
 
     def mark_message_as_sent(self):
         with open(self.last_sent_file, 'w') as f:
-            f.write(datetime.now().isoformat())
+            f.write(datetime.now(pytz.timezone('EST')).isoformat())
 
     @tasks.loop(hours=24)
     async def daily_message(self):
