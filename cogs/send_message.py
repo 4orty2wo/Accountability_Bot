@@ -15,7 +15,7 @@ class SendMessageCog(commands.Cog):
         # Find the channel
         channel = self.bot.get_channel(channel_id)
         if channel is None:
-            await ctx.send(f"Channel with ID {channel_id} not found.")
+            await ctx.send(f"Channel ID not found.")
             return
 
         # Check if the bot can send messages to the channel
@@ -26,7 +26,7 @@ class SendMessageCog(commands.Cog):
         # Try sending the message
         try:
             await channel.send(message)
-            await ctx.send(f"Message sent to channel {channel.name}.")
+            await ctx.send(f"Message sent.")
         except discord.Forbidden:
             await ctx.send("I don't have permission to send messages to this channel.")
         except Exception as e:
