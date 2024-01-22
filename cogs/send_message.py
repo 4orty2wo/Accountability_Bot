@@ -7,7 +7,7 @@ class SendMessageCog(commands.Cog):
         self.my_user_id = 213678267155087360  # Replace with your Discord user ID
 
     @commands.command(name='send_message')
-    async def send_message(self, ctx, channel_id: int, *, message: str):
+    async def send_message(self, ctx, channel_id: int=0, *, message: str):
         # Check if the author is you and if the command is invoked in DM
         if ctx.author.id != self.my_user_id or not isinstance(ctx.channel, discord.DMChannel):
             return  # Silently ignore if not from you or not in DMs
