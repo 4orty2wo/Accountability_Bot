@@ -5,4 +5,6 @@ services:
     volumes:
       - ./cogs:/usr/src/bot/cogs
     restart: always
+    environment:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 

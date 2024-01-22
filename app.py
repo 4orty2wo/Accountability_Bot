@@ -19,6 +19,7 @@ with open('config.prod.yml', 'r') as file:
     config = yaml.safe_load(file)
 
 WELCOME_CHANNEL_ID = config['WELCOME_CHANNEL_ID']
+AUDIT_CHANNEL_ID = config['AUDIT_CHANNEL_ID']
 
 # Configure the logging level and format
 logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(name)s: %(message)s')
@@ -84,7 +85,9 @@ async def ping(ctx):
 async def main():
     async with bot:
         await load()
+        loaded_cogs = [cog for cog in bot.extensions]
         await bot.start(BOT_TOKEN)
+        await bot.get_channel(int(AUDIT_CHANNEL_ID)).send("Loaded cogs:", loaded_cogs)
 
 
 asyncio.run(main())
