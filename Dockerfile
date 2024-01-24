@@ -10,7 +10,7 @@ ARG CONFIG_FILE
 ARG BOT_TOKEN
 
 # Environment variables to be used by your application
-ENV BOT_TOKEN=${DB_USERNAME}
+ENV BOT_TOKEN=${BOT_TOKEN}
 
 COPY . .
 

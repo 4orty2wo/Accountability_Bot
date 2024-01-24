@@ -15,7 +15,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 MONGO_CONNECTION_STRING = os.getenv('MONGO_CONNECTION_STRING')
 
 # Load the config file
-with open('config.prod.yml', 'r') as file:
+with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
 
 WELCOME_CHANNEL_ID = config['WELCOME_CHANNEL_ID']
@@ -87,7 +87,6 @@ async def main():
         await load()
         loaded_cogs = [cog for cog in bot.extensions]
         await bot.start(BOT_TOKEN)
-        await bot.get_channel(int(AUDIT_CHANNEL_ID)).send("Loaded cogs:", loaded_cogs)
 
 
 asyncio.run(main())
