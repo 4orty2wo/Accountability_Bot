@@ -1,13 +1,12 @@
-name: Build and Push Dev Build of Docker image
-
+name: main
 on:
   pull_request:
     branches:
-      - dev
+      - master
     types: [closed]
   push:
     branches:
-      - dev
+      - master
 
 jobs:
   build_and_push:
@@ -33,6 +32,6 @@ jobs:
           context: .
           push: true
           build-args: |
-            BOT_TOKEN=${{ secrets.DEV_BOT_TOKEN }}
-            CONFIG_FILE=config.dev.yml
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:dev
+            BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+            CONFIG_FILE=config.prod.yml
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
