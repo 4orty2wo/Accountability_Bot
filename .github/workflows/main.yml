@@ -1,12 +1,16 @@
-name: ci
-
+name: main
 on:
+  pull_request:
+    branches:
+      - master
+    types: [closed]
   push:
     branches:
       - master
 
 jobs:
-  build:
+  build_and_push:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
       -
@@ -27,4 +31,7 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+            CONFIG_FILE=config.prod.yml
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
