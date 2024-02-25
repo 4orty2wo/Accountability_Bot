@@ -20,7 +20,7 @@ COPY . .
 RUN rm -f config.yml
 
 # Replace the default config file with the one specified at build time
-COPY ${CONFIG_FILE} config.yml
+COPY configs/${CONFIG_FILE} config.yml
 
 CMD ["python", "app.py"]
 
