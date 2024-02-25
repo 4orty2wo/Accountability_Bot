@@ -1,82 +1,54 @@
-import os, asyncio
-from datetime import datetime, time, timedelta
-from discord.ext import tasks, commands
-import yaml 
+import discord
+from discord.ext import commands, tasks
 import pytz
+from datetime import datetime, timedelta
+import asyncio
+import yaml
 
-
-class DailyCheckin(commands.Cog):
+class DailyCheckInCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = self.load_channel_id()
-        self.last_sent_file = 'last_sent.txt'  # File to store the timestamp of the last sent message
-        self.daily_message.start()
+        self.config = self.load_config()
+        self.check_in_message_channel_id = self.config['SESSION_PLANNING_CHANNEL_ID']  # Read from config.yml
+        self.timezone = pytz.timezone('America/New_York')
+        self.check_in.start()
 
-    def load_channel_id(self):
-        with open('config.prod.yml', 'r') as f:
-            config = yaml.safe_load(f)
-            return int(config['SESSION_PLANNING_CHANNEL_ID'])
+    def load_config(self):
+        with open('config.yml', 'r') as f:
+            return yaml.safe_load(f)
 
-    def was_message_sent_today(self):
-        try:
-            with open(self.last_sent_file, 'r') as f:
-                last_sent = datetime.fromisoformat(f.read().strip())
-                return last_sent.date() == datetime.now(pytz.timezone('EST')).date()
-        except (FileNotFoundError, ValueError):
-            return False
+    async def read_file(self, filepath):
+        with open(filepath, 'r') as file:
+            return file.read()
 
-    def mark_message_as_sent(self):
-        with open(self.last_sent_file, 'w') as f:
-            f.write(datetime.now(pytz.timezone('EST')).isoformat())
+    async def format_message_with_pings(self, message, user_ids):
+        pings = ' '.join([f'<@{user_id}>' for user_id in user_ids.splitlines()])
+        return f"{pings}\n\n{message}"
 
     @tasks.loop(hours=24)
-    async def daily_message(self):
-        if datetime.now(pytz.timezone('EST')).weekday() == 6:  # Sunday is 6
-            return
+    async def check_in(self):
+        now = datetime.now(self.timezone)
+        if now.weekday() < 6:  # Monday (0) to Saturday (5)
+            try:
+                message = await self.read_file('assets/check_in_message.md')
+                user_ids = await self.read_file('assets/check_in_pings.txt')
+                formatted_message = await self.format_message_with_pings(message, user_ids)
+                channel = self.bot.get_channel(self.check_in_message_channel_id)
+                if channel:
+                    await channel.send(formatted_message)
+            except Exception as e:
+                print(f"Error in sending daily check-in: {e}")
 
-        if not self.was_message_sent_today():
-            channel = self.bot.get_channel(self.channel_id)
-            if channel:
-                # Read the message content
-                with open('checkin_message.txt', 'r') as file:
-                    message_content = file.read()
+    @check_in.before_loop
+    async def before_check_in(self):
+        now = datetime.now(self.timezone)
+        next_run_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
+        if now.time() > next_run_time.time():
+            next_run_time += timedelta(days=1)
+        await discord.utils.sleep_until(next_run_time.astimezone(pytz.utc))
 
-                # Read user IDs and format them for mentions
-                with open('users.txt', 'r') as file:
-                    user_mentions = ' '.join([f'<@{line.strip()}>' for line in file if line.strip()])
+    def cog_unload(self):
+        self.check_in.cancel()
 
-                # Get the current date and time
-                dt = datetime.now(pytz.timezone('EST')).strftime("%A, %d %B %Y, %H:%M")
-
-                # Combine message content and user mentions
-                full_message = f"{dt}\n\nGood morning {user_mentions}!\n\n{message_content}"
-
-                await channel.send(full_message)
-
-    @daily_message.before_loop
-    async def before_daily_message(self):
-        await self.bot.wait_until_ready()
-
-        now = datetime.now(pytz.timezone('EST'))
-        target_time = time(9, 0)  # 9 AM
-        target_datetime = datetime.combine(now.date(), target_time)
-
-        if now.weekday() != 6:  # Check if it's not Sunday
-            if now < target_datetime:
-                sleep_duration = (target_datetime - now).total_seconds()
-                await asyncio.sleep(sleep_duration)
-            elif not self.was_message_sent_today():
-                await self.daily_message()
-
-    @daily_message.after_loop
-    async def after_daily_message(self):
-        # Handle any error or interruption here
-        pass
-
-    # Run daily_message when the cog is loaded
-    @commands.Cog.listener()
-    async def on_ready(self):
-        await self.before_daily_message()
-
-async def setup(bot):
-    await bot.add_cog(DailyCheckin(bot))
+def setup(bot):
+    bot.add_cog(DailyCheckInCog(bot))

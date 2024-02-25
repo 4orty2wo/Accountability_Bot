@@ -87,6 +87,7 @@ async def main():
         await load()
         loaded_cogs = [cog for cog in bot.extensions]
         await bot.start(BOT_TOKEN)
+        await bot.get_channel(int(AUDIT_CHANNEL_ID)).send(f"Bot started with cogs: {loaded_cogs}")
 
 
 asyncio.run(main())
