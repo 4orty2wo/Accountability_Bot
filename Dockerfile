@@ -1,5 +1,7 @@
 FROM python:3.8-slim
 
+ENV TZ='America/New_York'
+
 WORKDIR /usr/src/bot
 
 COPY requirements.txt .
