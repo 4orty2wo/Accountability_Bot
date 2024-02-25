@@ -33,5 +33,5 @@ jobs:
           push: true
           build-args: |
             BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-            CONFIG_FILE=config.prod.yml
+            CONFIG_FILE=configs/config.prod.yml
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
