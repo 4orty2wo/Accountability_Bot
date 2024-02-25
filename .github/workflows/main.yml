@@ -35,3 +35,4 @@ jobs:
             BOT_TOKEN=${{ secrets.BOT_TOKEN }}
             CONFIG_FILE=configs/config.prod.yml
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+          platforms: linux/amd64,linux/arm64/v8
